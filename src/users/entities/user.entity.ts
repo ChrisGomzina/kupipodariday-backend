@@ -4,6 +4,7 @@ import {
   UpdateDateColumn,
   Entity,
   Column,
+  OneToMany,
 } from 'typeorm';
 import {
   IsInt,
@@ -13,6 +14,9 @@ import {
   IsEmail,
   IsUrl,
 } from 'class-validator';
+import { Wish } from '../../wishes/entities/wish.entity';
+import { Offer } from '../../offers/entities/offer.entity';
+import { Wishlist } from '../../wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User {
@@ -49,4 +53,13 @@ export class User {
   @Column()
   @IsString()
   password: string;
+
+  @OneToMany(() => Wish, (wish) => wish.owner)
+  wishes: Wish[];
+
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
+
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  wishlists: Wishlist[];
 }

@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import {
   IsInt,
@@ -13,6 +15,8 @@ import {
   IsUrl,
   Length,
 } from 'class-validator';
+import { User } from '../../users/entities/user.entity';
+import { Offer } from '../../offers/entities/offer.entity';
 
 @Entity()
 export class Wish {
@@ -49,9 +53,15 @@ export class Wish {
   @IsNumber()
   raised: number;
 
+  @ManyToOne(() => User, (user) => user.wishes)
+  owner: User;
+
   @Column()
   @Length(1, 1024)
   description: string;
+
+  @OneToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 
   @Column({ default: 0 })
   @IsInt()
