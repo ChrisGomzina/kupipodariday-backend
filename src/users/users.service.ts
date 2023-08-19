@@ -41,7 +41,6 @@ export class UsersService {
 
   async updateOneById(id: number, dto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
-
     if (dto.email && dto.email !== user.email) {
       const email = await this.findByEmail(dto.email);
       if (email) {
@@ -50,7 +49,6 @@ export class UsersService {
         );
       }
     }
-
     if (dto.username && dto.username !== user.username) {
       const username = await this.findByUsername(dto.username);
       if (username) {
@@ -59,11 +57,9 @@ export class UsersService {
         );
       }
     }
-
     if (dto.password) {
       dto.password = await this.hashService.hashPassword(dto.password);
     }
-
     const updatedUser: User = {
       ...user,
       username: dto?.username,
@@ -73,7 +69,6 @@ export class UsersService {
       avatar: dto?.avatar,
     };
     await this.userRepository.update(user.id, updatedUser);
-
     return await this.findById(id);
   }
 }
