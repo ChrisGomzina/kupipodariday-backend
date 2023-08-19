@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -47,6 +47,12 @@ export class WishesService {
       relations: ['owner', 'offers'],
     });
     return wishes;
+  }
+
+  async findManyByIdArr(idArr: number[]): Promise<Wish[]> {
+    return this.wishRepository.find({
+      where: { id: In(idArr) },
+    });
   }
 
   async updateOneById(
