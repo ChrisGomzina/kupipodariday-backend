@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { HashService } from '../hash/hash.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -33,9 +33,14 @@ export class UsersService {
     return await this.userRepository.findOneBy({ username });
   }
 
+  async findAll(): Promise<User[]> {
+    const users = await this.userRepository.find();
+    return users;
+  }
+
   async findMany(query: string): Promise<User[]> {
     return await this.userRepository.find({
-      where: [{ username: query }, { email: query }],
+      where: [{ username: Like(`${query}%`) }, { email: Like(`${query}%`) }],
     });
   }
 

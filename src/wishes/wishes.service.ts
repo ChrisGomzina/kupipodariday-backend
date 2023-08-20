@@ -103,4 +103,12 @@ export class WishesService {
       );
     }
   }
+
+  async updateWishRaised(
+    wishId: number,
+    raised: number,
+  ): Promise<Record<string, never>> {
+    await this.wishRepository.update(wishId, { raised });
+    return {};
+  }
 }
