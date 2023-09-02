@@ -15,12 +15,12 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
-    private readonly wishRepository: Repository<Wish>,
+    private readonly wishesRepository: Repository<Wish>,
     private readonly usersService: UsersService,
   ) {}
 
   async create(dto: CreateWishDto, user: User): Promise<Record<string, never>> {
-    await this.wishRepository.save({
+    await this.wishesRepository.save({
       ...dto,
       owner: user,
     });
@@ -32,7 +32,7 @@ export class WishesService {
     if (relations) {
       queryOptions['relations'] = relations;
     }
-    const wish = await this.wishRepository.findOne({
+    const wish = await this.wishesRepository.findOne({
       where: { id },
       ...queryOptions,
     });
@@ -43,14 +43,14 @@ export class WishesService {
   }
 
   async findAll(): Promise<Wish[]> {
-    const wishes = await this.wishRepository.find({
+    const wishes = await this.wishesRepository.find({
       relations: ['owner', 'offers'],
     });
     return wishes;
   }
 
   async findManyByIdArr(idArr: number[]): Promise<Wish[]> {
-    return this.wishRepository.find({
+    return this.wishesRepository.find({
       where: { id: In(idArr) },
     });
   }
@@ -60,7 +60,7 @@ export class WishesService {
     updateWishDto: UpdateWishDto,
     userId: number,
   ) {
-    const wish = await this.wishRepository.findOne({
+    const wish = await this.wishesRepository.findOne({
       relations: {
         offers: true,
         owner: true,
@@ -77,13 +77,13 @@ export class WishesService {
       for (const key in updateWishDto) {
         wish[key] = updateWishDto[key];
       }
-      return this.wishRepository.save(wish);
+      return this.wishesRepository.save(wish);
     }
     return wish;
   }
 
   async remove(id: number, userId: number) {
-    const wish = await this.wishRepository.findOne({
+    const wish = await this.wishesRepository.findOne({
       relations: {
         owner: true,
       },
@@ -96,7 +96,7 @@ export class WishesService {
     });
     if (!wish) throw new BadRequestException('Подарок с таким id не найден');
     try {
-      return await this.wishRepository.remove(wish);
+      return await this.wishesRepository.remove(wish);
     } catch (err) {
       throw new ConflictException(
         'Нельзя удалить подарок на который уже скинулись',
@@ -108,7 +108,7 @@ export class WishesService {
     wishId: number,
     raised: number,
   ): Promise<Record<string, never>> {
-    await this.wishRepository.update(wishId, { raised });
+    await this.wishesRepository.update(wishId, { raised });
     return {};
   }
 }
