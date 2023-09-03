@@ -14,7 +14,7 @@ export const getPostgreSqlConfig = async (
     port: configService.get('SQL_PORT') || 5432,
     username: 'student',
     password: configService.get('SQL_PASSWORD') || 'student',
-    database: 'nest_project',
+    database: 'kupipodariday',
     schema: 'nest_project',
     entities: [User, Wish, Offer, Wishlist],
     synchronize: true,

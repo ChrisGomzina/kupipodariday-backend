@@ -15,35 +15,38 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
-    private readonly wishlistRepository: Repository<Wishlist>,
+    private readonly wishlistsRepository: Repository<Wishlist>,
     private readonly wishesService: WishesService,
   ) {}
 
   async create(dto: CreateWishlistDto, user: User): Promise<Wishlist> {
-    const wishesArr = await this.wishesService.findManyByIdArr(dto.itemsId);
-    await this.wishlistRepository.save({
+    const wishesArr = await this.wishesService.findManyById(dto.itemsId);
+    await this.wishlistsRepository.save({
       ...dto,
       owner: user,
       items: wishesArr,
     });
-    return await this.wishlistRepository.findOne({
+    return await this.wishlistsRepository.findOne({
       where: { name: dto.name },
       relations: ['owner', 'items'],
     });
   }
 
   async findOneById(id: number): Promise<Wishlist> {
-    const wishlist = await this.wishlistRepository.findOne({
+    const wishlist = await this.wishlistsRepository.findOne({
       where: { id },
       relations: ['owner', 'items'],
     });
+
     if (!wishlist) {
       throw new NotFoundException('Вишлист не найден');
     }
+
     return wishlist;
   }
+
   async findAll(): Promise<Wishlist[]> {
-    return await this.wishlistRepository.find({
+    return await this.wishlistsRepository.find({
       relations: ['owner', 'items'],
     });
   }
@@ -54,14 +57,17 @@ export class WishlistsService {
     userId: number,
   ): Promise<Wishlist> {
     const wishlist = await this.findOneById(id);
+
     if (!wishlist) {
       throw new NotFoundException('Вишлист не найден');
     }
+
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException('Нельзя удалять чужие вишлисты');
     }
-    const wishes = await this.wishesService.findManyByIdArr(dto.itemsId || []);
-    return await this.wishlistRepository.save({
+
+    const wishes = await this.wishesService.findManyById(dto.itemsId || []);
+    return await this.wishlistsRepository.save({
       ...wishlist,
       name: dto.name,
       image: dto.image,
@@ -72,13 +78,16 @@ export class WishlistsService {
 
   async remove(id: number, userId: number): Promise<Wishlist> {
     const wishlist = await this.findOneById(id);
+
     if (!wishlist) {
       throw new NotFoundException('Вишлист не найден');
     }
+
     if (wishlist.owner.id !== userId) {
       throw new BadRequestException('Нельзя удалять чужие вишлисты');
     }
-    await this.wishlistRepository.delete(id);
+
+    await this.wishlistsRepository.delete(id);
     return wishlist;
   }
 }

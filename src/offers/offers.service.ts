@@ -24,20 +24,24 @@ export class OffersService {
     user: User,
   ): Promise<Record<string, never>> {
     const wish = await this.wishesService.findById(dto.itemId);
+
     if (!wish) {
       throw new NotFoundException('Подарок с таким id не найден');
     }
+
     if (wish.owner.id === user.id) {
       throw new BadRequestException(
         'Вы не можете вносить средства для своего подарка',
       );
     }
+
     const calculatedRaised = calculateRaised(Number(wish.raised), dto.amount);
     if (calculatedRaised > wish.price) {
       throw new BadRequestException(
         'Сумма собранных средств не может превышать стоимость подарка',
       );
     }
+
     await this.wishesService.updateWishRaised(wish.id, calculatedRaised);
     const createdOffer = this.offersRepository.create({
       ...dto,
@@ -53,9 +57,11 @@ export class OffersService {
       where: { id },
       relations: ['item', 'user'],
     });
+
     if (!offer) {
       throw new NotFoundException('Предложение не найдено');
     }
+
     delete offer.user.password;
     return offer;
   }
