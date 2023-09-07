@@ -19,6 +19,8 @@ import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+import { Wish } from '../wishes/entities/wish.entity';
+
 @UseGuards(ThrottlerGuard)
 @Controller('wishes')
 export class WishesController {
@@ -51,9 +53,9 @@ export class WishesController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  @UseInterceptors(OwnerInterceptor)
+  @UseInterceptors(OwnerInterceptor<Wish[]>)
   @UseInterceptors(WishInterceptor)
-  async findById(@Param('id') id: string) {
+  async findById(@Param('id') id: string): Promise<Wish> {
     return await this.wishesService.findById(+id);
   }
 
@@ -69,7 +71,7 @@ export class WishesController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @UseInterceptors(OwnerInterceptor)
+  @UseInterceptors(OwnerInterceptor<Wish>)
   async deleteWish(@Req() { user }: { user: User }, @Param('id') id: string) {
     return await this.wishesService.remove(Number(id), user.id);
   }

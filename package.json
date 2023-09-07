@@ -1,7 +1,7 @@
 {
   "name": "kupipodariday",
   "version": "0.0.1",
-  "description": "",
+  "description": "Backend for the wishlist service",
   "author": "Christina Gomzina",
   "private": true,
   "license": "UNLICENSED",

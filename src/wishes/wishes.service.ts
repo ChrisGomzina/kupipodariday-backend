@@ -74,19 +74,21 @@ export class WishesService {
     });
   }
 
-  async findById(id: number, relations?): Promise<Wish> {
-    const queryOptions = {};
-
-    if (relations) {
-      queryOptions['relations'] = relations;
-    }
+  async findById(id: number): Promise<Wish> {
     const wish = await this.wishesRepository.findOne({
       where: { id },
-      ...queryOptions,
+      relations: [
+        'owner',
+        'offers',
+        'offers.user',
+        'offers.user.wishes',
+        'offers.user.offers',
+        'offers.user.wishlists',
+      ],
     });
 
     if (!wish) {
-      throw new BadRequestException('Подарок с таким id не найден');
+      throw new NotFoundException('Подарок с таким id не найден');
     }
 
     return wish;
